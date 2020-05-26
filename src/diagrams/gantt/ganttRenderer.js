@@ -122,7 +122,7 @@ export const draw = function(text, id) {
         return i * theGap + theTopPad - 2;
       })
       .attr('width', function() {
-        return w - conf.rightPadding / 2;
+        return Math.max(5.0, w - conf.rightPadding / 2);
       })
       .attr('height', theGap)
       .attr('class', function(d) {
@@ -166,7 +166,10 @@ export const draw = function(text, id) {
         if (d.milestone) {
           return theBarHeight;
         }
-        return timeScale(d.renderEndTime || d.endTime) - timeScale(d.startTime);
+        const width = timeScale(d.renderEndTime || d.endTime) - timeScale(d.startTime);
+        const minBarWidth = 5.0;
+        // min width avoids the width of the bar becoming 0 if the task is running for a short amount of time.
+        return Math.max(minBarWidth, width);
       })
       .attr('height', theBarHeight)
       .attr('transform-origin', function(d, i) {
@@ -242,9 +245,10 @@ export const draw = function(text, id) {
       .attr('font-size', conf.fontSize)
       .attr('x', function(d) {
         let startX = timeScale(d.startTime);
+        const textPadding = 4.0;
         let endX = timeScale(d.renderEndTime || d.endTime);
         if (d.milestone) {
-          startX += 0.5 * (timeScale(d.endTime) - timeScale(d.startTime)) - 0.5 * theBarHeight;
+          startX += 0.5 * (timeScale(d.endTime) - timeScale(d.startTime)) - 0.5 * theBarHeight + textPadding;
         }
         if (d.milestone) {
           endX = startX + theBarHeight;
