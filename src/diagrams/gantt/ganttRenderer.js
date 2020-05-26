@@ -75,10 +75,20 @@ export const draw = function(text, id) {
   for (let i = 0; i < taskArray.length; i++) {
     categories.push(taskArray[i].type);
   }
+  categories = appendedIndices(categories);
 
   const catsUnfiltered = categories; // for vert labels
 
+  // console.log(`CATEGORIES`);
+  // console.log(categories);
+  // console.log(`TYPE`);
+  // console.log(typeof(categories));
+  // console.log('APPENDED');
+  // console.log(appendedIndices(categories));
+
   categories = checkUnique(categories);
+
+  console.log(categories);
 
   makeGant(taskArray, w, h);
   if (typeof conf.useWidth !== 'undefined') {
@@ -245,10 +255,9 @@ export const draw = function(text, id) {
       .attr('font-size', conf.fontSize)
       .attr('x', function(d) {
         let startX = timeScale(d.startTime);
-        const textPadding = 4.0;
         let endX = timeScale(d.renderEndTime || d.endTime);
         if (d.milestone) {
-          startX += 0.5 * (timeScale(d.endTime) - timeScale(d.startTime)) - 0.5 * theBarHeight + textPadding;
+          startX += 0.5 * (timeScale(d.endTime) - timeScale(d.startTime)) - 0.5 * theBarHeight;
         }
         if (d.milestone) {
           endX = startX + theBarHeight;
@@ -379,7 +388,7 @@ export const draw = function(text, id) {
           tspan.setAttribute('alignment-baseline', 'central');
           tspan.setAttribute('x', '10');
           if (j > 0) tspan.setAttribute('dy', '1em');
-          tspan.textContent = rows[j];
+          tspan.textContent = removedIndex(rows[j]); // Earlier, added index to categories names to ensure uniqueness.
           svgLabel.appendChild(tspan);
         }
         return svgLabel;
@@ -439,6 +448,24 @@ export const draw = function(text, id) {
       }
     }
     return result;
+  }
+
+  // Returns '-i' appended to the end of each string in `arr`, where `i` is the index of the item in `arr`.
+  function appendedIndices(arr) {
+    return arr.map((x, i) => appendedIndex(x, i));
+  }
+
+  // Returns `-i` appended onto str.
+  function appendedIndex(str, i) {
+    return `${str}-${i}`;
+  }
+
+  // Return `str` with postfixt `-X` remove from end of `str`, where X is an arbitarary string.
+  function removedIndex(str) {
+    const i = str.lastIndexOf("-");
+    return i === -1
+      ? str 
+      : str.substring(0, i);
   }
 
   // from this stackexchange question: http://stackoverflow.com/questions/14227981/count-how-many-strings-in-an-array-have-duplicates-in-the-same-array
