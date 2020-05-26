@@ -73,22 +73,14 @@ export const draw = function(text, id) {
   let categories = [];
 
   for (let i = 0; i < taskArray.length; i++) {
-    categories.push(taskArray[i].type);
+    const type = appendedIndex(taskArray[i].type, i);
+    taskArray[i].type = type;
+    categories.push(type);
   }
-  categories = appendedIndices(categories);
 
   const catsUnfiltered = categories; // for vert labels
 
-  // console.log(`CATEGORIES`);
-  // console.log(categories);
-  // console.log(`TYPE`);
-  // console.log(typeof(categories));
-  // console.log('APPENDED');
-  // console.log(appendedIndices(categories));
-
   categories = checkUnique(categories);
-
-  console.log(categories);
 
   makeGant(taskArray, w, h);
   if (typeof conf.useWidth !== 'undefined') {
@@ -114,12 +106,12 @@ export const draw = function(text, id) {
       .interpolate(interpolateHcl);
 
     makeGrid(leftPadding, topPadding, pageWidth, pageHeight);
-    drawRects(tasks, gap, topPadding, leftPadding, barHeight, colorScale, pageWidth, pageHeight);
+    drawSectionRects(tasks, gap, topPadding, leftPadding, barHeight, colorScale, pageWidth, pageHeight);
     vertLabels(gap, topPadding, leftPadding, barHeight, colorScale);
     drawToday(leftPadding, topPadding, pageWidth, pageHeight);
   }
 
-  function drawRects(theArray, theGap, theTopPad, theSidePad, theBarHeight, theColorScale, w) {
+  function drawSectionRects(theArray, theGap, theTopPad, theSidePad, theBarHeight, theColorScale, w) {
     // Draw background rects covering the entire width of the graph, these form the section rows.
     svg
       .append('g')
